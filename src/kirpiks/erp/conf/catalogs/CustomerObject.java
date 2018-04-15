@@ -9,6 +9,7 @@ public class CustomerObject extends CatalogObject {
     public static final String COL_ADDRESS = "Address";
 
     public static Map<String, String> getColTypes() {
+
         Map<String, String> map = CatalogObject.getColTypes();
         map.put(COL_ADDRESS, "VARCHAR(150)");
         return map;
@@ -22,6 +23,12 @@ public class CustomerObject extends CatalogObject {
         params.put("Address", getAddress());
 
         return params;
+    }
+
+    @Override
+    public void setFromParams(Map<String, Object> map) {
+        super.setFromParams(map);
+        setAddress((String) map.get(COL_ADDRESS));
     }
 
     CustomerObject() {}

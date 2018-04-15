@@ -2,13 +2,10 @@ package kirpiks.erp.conf.catalogs;
 
 import kirpiks.erp.meta.CatalogManager;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public class CustomerManager extends CatalogManager {
 
-    public static final String COL_ADDRESS = "Address";
     private static CustomerManager instance = null;
 
     private CustomerManager() { }
