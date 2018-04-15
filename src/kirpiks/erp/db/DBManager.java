@@ -1,7 +1,6 @@
 package kirpiks.erp.db;
 
 import java.sql.*;
-import java.util.HashMap;
 import java.util.Map;
 
 public class DBManager {
@@ -168,43 +167,63 @@ public class DBManager {
 
     }
 
-    public Map<String, Object> select(
+    public DataSet select(
+            String tableName, Map<String, Object> params)
+            throws SQLException {
+
+        return this.select(tableName, params, null, null);
+    }
+
+    public DataSet select(
             String tableName, Map<String, Object> params, String field)
+            throws SQLException {
+
+        return this.select(tableName, params, field, null);
+    }
+
+    public DataSet select(
+            String tableName, Map<String, Object> params, String field, Object value)
             throws SQLException {
 
         StringBuilder sb = new StringBuilder("SELECT * FROM ");
         sb.append(tableName);
-        sb.append(" WHERE ").append(field).append(" = ?;");
+
+        if (field != null) {
+            sb.append(" WHERE ").append(field).append(" = ?;");
+        }
+
         String sql = sb.toString();
         System.out.println(sql);
 
         ResultSet rs = null;
 
-        Map<String, Object> results = new HashMap<>();
+        DataSet results = new DataSet();
 
         try (
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ) {
 
-            stmt.setObject(1, params.get(field));
+            if (field != null) {
+                if (value == null) {
+                    stmt.setObject(1, params.get(field));
+                } else {
+                    stmt.setObject(1, value);
+                }
+            }
             System.out.println(stmt);
             rs = stmt.executeQuery();
 
-            //ResultSetMetaData meta = stmt.getMetaData();
-
-            if (rs.next()) {
-//                for (int i = 1; i <= meta.getColumnCount(); i++) {
-//                    results.put(meta.getColumnName(i), rs.getObject(i));
-//                }
+            while (rs.next()) {
+                results.newRow();
                 for (String key : params.keySet()) {
                     results.put(key, rs.getObject(key));
                 }
-                return results;
             }
-            return null;
+            return results;
 
         } finally {
-            rs.close();
+            if (rs != null) rs.close();
         }
     }
+
 }

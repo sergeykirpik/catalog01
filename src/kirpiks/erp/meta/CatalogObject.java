@@ -50,6 +50,17 @@ public abstract class CatalogObject {
 
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(COL_REF).append(" = ").append(getRef()).append(", ");
+        sb.append(COL_CODE).append(" = ").append(getCode()).append(", ");
+        sb.append(COL_DESCRIPTION).append(" = ").append(getDescription());
+        sb.append('\n');
+
+        return sb.toString();
+    }
+
     public String getRef() {
         return ref;
     }
