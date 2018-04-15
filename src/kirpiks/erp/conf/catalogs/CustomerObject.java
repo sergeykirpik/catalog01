@@ -2,10 +2,17 @@ package kirpiks.erp.conf.catalogs;
 
 import kirpiks.erp.meta.CatalogObject;
 
-import java.util.List;
 import java.util.Map;
 
 public class CustomerObject extends CatalogObject {
+
+    public static final String COL_ADDRESS = "Address";
+
+    public static Map<String, String> getColTypes() {
+        Map<String, String> map = CatalogObject.getColTypes();
+        map.put(COL_ADDRESS, "VARCHAR(150)");
+        return map;
+    }
 
     private String Address;
 

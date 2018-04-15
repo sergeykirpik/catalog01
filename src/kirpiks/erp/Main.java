@@ -36,8 +36,15 @@ public class Main {
         c1.setDescription("Customer 01");
         c1.setAddress("Pushkina St");
         c1.save();
+
         c1.setAddress("Bol. Arnautskaya St");
         c1.save();
+
+        c1.setDescription("Some description");
+        System.out.println("Before read(): " + c1.getDescription());
+        c1.read();
+
+        System.out.println("After read(): " + c1.getDescription());
     }
 
     static void createCustomers() throws SQLException {

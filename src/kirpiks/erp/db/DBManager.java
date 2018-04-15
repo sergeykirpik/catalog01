@@ -1,6 +1,7 @@
 package kirpiks.erp.db;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Map;
 
 public class DBManager {
@@ -40,21 +41,20 @@ public class DBManager {
     }
 
     public void createTable(
-            String tableName, Iterable<String> columns)
+            String tableName, Map<String, String> columns)
             throws SQLException {
-
 
         StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         sb.append(tableName).append(" ( ");
 
         boolean isFirst = true;
-        for (String col : columns) {
+        for (String col : columns.keySet()) {
             if (!isFirst) {
                 sb.append(", ");
             } else {
                 isFirst = false;
             }
-            sb.append(col);
+            sb.append(col).append(" ").append(columns.get(col));
         }
 
         sb.append(" ); ");
@@ -166,5 +166,45 @@ public class DBManager {
             System.out.println("Rows affected: " + affected);
         }
 
+    }
+
+    public Map<String, Object> select(
+            String tableName, Map<String, Object> params, String field)
+            throws SQLException {
+
+        StringBuilder sb = new StringBuilder("SELECT * FROM ");
+        sb.append(tableName);
+        sb.append(" WHERE ").append(field).append(" = ?;");
+        String sql = sb.toString();
+        System.out.println(sql);
+
+        ResultSet rs = null;
+
+        Map<String, Object> results = new HashMap<>();
+
+        try (
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ) {
+
+            stmt.setObject(1, params.get(field));
+            System.out.println(stmt);
+            rs = stmt.executeQuery();
+
+            //ResultSetMetaData meta = stmt.getMetaData();
+
+            if (rs.next()) {
+//                for (int i = 1; i <= meta.getColumnCount(); i++) {
+//                    results.put(meta.getColumnName(i), rs.getObject(i));
+//                }
+                for (String key : params.keySet()) {
+                    results.put(key, rs.getObject(key));
+                }
+                return results;
+            }
+            return null;
+
+        } finally {
+            rs.close();
+        }
     }
 }

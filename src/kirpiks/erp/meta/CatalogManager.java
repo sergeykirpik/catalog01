@@ -3,31 +3,20 @@ package kirpiks.erp.meta;
 import kirpiks.erp.db.DBManager;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class CatalogManager {
 
-    private static final String[] COLUMN_NAMES = {
-            "Ref CHAR(36)",
-            "DeletionMark BOOLEAN",
-            "Code INT",
-            "Description VARCHAR(100)"
-    };
-
     abstract public String getTableName();
 
-    public List<String> getTableColumns() {
-        List<String> list = new ArrayList<>();
-        Collections.addAll(list, COLUMN_NAMES);
-        return list;
+    public Map<String, String> getColTypes() {
+        Map<String, String> map = new HashMap<>(CatalogObject.getColTypes());
+        return map;
     }
 
     public void createTable() throws SQLException {
 
-        DBManager.getInstance().createTable(getTableName(), getTableColumns());
+        DBManager.getInstance().createTable(getTableName(), getColTypes());
     }
 
     public void dropTable() throws SQLException {
@@ -53,8 +42,17 @@ public abstract class CatalogManager {
             DBManager.getInstance().insert(getTableName(), el.getParams());
             el.inDatabase = true;
         } else {
-            DBManager.getInstance().update(getTableName(), el.getParams(), "Ref");
+            DBManager.getInstance().update(
+                    getTableName(), el.getParams(), CatalogObject.COL_REF);
         }
+    }
+
+    public <T extends CatalogObject> void read(T el) throws SQLException {
+
+        Map<String, Object> res = DBManager.getInstance()
+                .select(getTableName(), el.getParams(), CatalogObject.COL_REF);
+
+        el.setFromParams(res);
     }
 
 }
